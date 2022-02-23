@@ -113,6 +113,31 @@ namespace Hackaton.Controllers
             return new JsonResult("Updated succesfully");
         }
 
+        [HttpDelete("{id}")]
+        public JsonResult Delete(int id)
+        {
+            string query = @"DELETE FROM
+                                dbo.Task
+                             WHERE TaskId = " + id + @"";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("TaskAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+
+            return new JsonResult("Deleted succesfully");
+        }
 
     }
 }
