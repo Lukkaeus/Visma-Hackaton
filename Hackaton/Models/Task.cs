@@ -8,6 +8,7 @@
         public string DateOfCreation { get; set; }
         public string DateOfExpiration { get; set; }
         public string ExpectedDuration { get; set; }
+        public bool CheckBox { get; set; }
 
 
     }

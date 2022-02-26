@@ -28,7 +28,35 @@ namespace Hackaton.Controllers
                                     TaskDescription,
                                     convert(varchar(10),DateOfCreation,120) as DateOfCreation,
                                     convert(varchar(10),DateOfExpiration,120) as DateOfExpiration,
-                                    ExpectedDuration
+                                    ExpectedDuration,
+                                    CheckBox
+                             FROM
+                                    dbo.Task
+							ORDER BY TaskId DESC";
+
+            DataTable table = new DataTable();
+            string sqlDataSource = _configuration.GetConnectionString("TaskAppCon");
+            SqlDataReader myReader;
+            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
+            {
+                myCon.Open();
+                using (SqlCommand myCommand = new SqlCommand(query, myCon))
+                {
+                    myReader = myCommand.ExecuteReader();
+                    table.Load(myReader);
+
+                    myReader.Close();
+                    myCon.Close();
+                }
+            }
+            return new JsonResult(table);
+        }
+
+        [Route("GetAllTaskNames")]
+
+        public JsonResult GetAllTaskNames()
+        {
+            string query = @"SELECT TaskName
                              FROM
                                     dbo.Task";
 
@@ -60,7 +88,7 @@ namespace Hackaton.Controllers
                             (
                             '" + task.TaskName + @"'
                             ,'" + task.TaskDescription + @"'
-                            ,'" + task.DateOfCreation + @"'
+                            ,'" + DateTime.UtcNow.Date + @"'
                             ,'" + task.DateOfExpiration + @"'
                             ,'" + task.ExpectedDuration + @"'
                             )";
@@ -92,6 +120,7 @@ namespace Hackaton.Controllers
                             ,DateOfCreation = '" + task.DateOfCreation + @"'
                             ,DateOfExpiration = '" + task.DateOfExpiration + @"'
                             ,ExpectedDuration = '" + task.ExpectedDuration + @"'
+                            ,CheckBox = '" + task.CheckBox + @"'
                             where TaskId = " + task.TaskId + @"
                             ";
             DataTable table = new DataTable();
